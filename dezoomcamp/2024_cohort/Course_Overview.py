@@ -5,7 +5,7 @@ add_page_title(layout="wide")
 
 hide_pages(["Thank you"])
 
-st.markdown("### 🧙‍♂️ Data Engineering Zoomcamp 2024 Cohort")
+st.markdown("### 🏠 Property Price Prediction Project")
 
 st.video("https://www.youtube.com/watch?v=AtRhA-NfS24")
 

@@ -21,14 +21,15 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 
 #st.video("https://www.youtube.com/watch?v=AtRhA-NfS24")
 
-
 # Transform function
 def transform_input(input_data, encoders):
     for col, encoder in encoders.items():
-        input_data[col] = encoder.transform([input_data[col]])[0]
+        if col in input_data:
+            input_data[col] = encoder.transform([input_data[col]])[0]
+        else:
+            st.error(f"Key {col} not found in input data")
     return input_data
-  
-  
+
 # User input form
 location = st.selectbox('Location', encoders['location'].classes_)
 transaction = st.selectbox('Transaction', encoders['Transaction'].classes_)
@@ -41,7 +42,6 @@ super_area = st.number_input('Super Area (in sqft)', min_value=0.0)
 floor_level = st.number_input('Floor Level', min_value=0)
 total_floors = st.number_input('Total Floors', min_value=0)
 number_of_parking = st.number_input('Number of Parking', min_value=0)
-
 
 # Handle submit button
 if st.button('Predict'):
@@ -68,8 +68,7 @@ if st.button('Predict'):
     # Make prediction
     prediction = model.predict(input_data)[0]
     st.write(f'Predicted Price: {prediction} rupees')
-    
-    
+
 # Example of a simple chart
 if st.button('Show Distribution of Prices'):
     data = pd.read_csv('files/house/updated_house_info.csv')  # Adjust path as needed

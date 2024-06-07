@@ -24,7 +24,6 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 # Streamlit form for user input
 st.title('House Price Prediction')
 
-
 # Transform function
 def transform_input(input_data, encoders):
     for col, encoder in encoders.items():
@@ -68,11 +67,18 @@ if st.button('Predict'):
     # Transform the input data using the saved encoders
     transformed_input = transform_input(user_input, encoders)
     
-    # Convert to numpy array and reshape
-    input_data = np.array(list(transformed_input.values())).reshape(1, -1)
+    # Convert to DataFrame for consistency
+    input_df = pd.DataFrame([transformed_input])
+    
+    # Ensure all columns are in the correct order as expected by the model
+    columns = [
+        'location', 'Transaction', 'Furnishing', 'Ownership', 'Parking Status', 'overlooking',
+        'Carpet Area (in sqft)', 'Super Area (in sqft)', 'Floor Level', 'Total Floors', 'Number of Parking'
+    ]
+    input_df = input_df[columns]
     
     # Make prediction
-    prediction = model.predict(input_data)[0]
+    prediction = model.predict(input_df)[0]
     st.write(f'Predicted Price: {prediction} rupees')
 
 # Example of a simple chart

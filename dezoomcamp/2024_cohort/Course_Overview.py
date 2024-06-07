@@ -25,66 +25,64 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 # Streamlit form for user input
 st.title('House Price Prediction')
 
-
-# Function to convert object columns to integers
-def convert_object_to_int(df):
-    for col in df.select_dtypes(include='object').columns:
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype('int32')
-    return df
-
-# Convert object columns
-data = convert_object_to_int(data)
-
-# Convert float columns to integers, excluding 'Price (in rupees)'
-float_cols = data.select_dtypes(include='float64').columns
-float_cols = float_cols[float_cols != 'Price (in rupees)']
-data[float_cols] = data[float_cols].fillna(0).astype('int32')
-
-# Function to preprocess data
-def preprocess_data(data):
-    # Encode categorical columns
+def preprocess_input(data):
+    # Your preprocessing steps here
+    data['Parking Status'] = data['Parking Status'].str.replace('Covered,', 'Covered')
     for col, encoder in encoders.items():
         data[col] = encoder.transform(data[col])
+    data.drop(columns=['Status'], inplace=True)
+    data.reset_index(drop=True, inplace=True)
     return data
 
-# Preprocess the data
-data = preprocess_data(data)
+def predict_price(input_data):
+    processed_data = preprocess_input(input_data)
+    prediction = model.predict(processed_data)
+    return prediction
+  
+  
+  
+st.write('This app predicts the price of a house based on input features.')
 
-# Streamlit app
-st.title('House Price Prediction App')
+st.header('Input Features')
+  
+input_data = pd.DataFrame({
+  'Price (in rupees)': [0],
+  'location': [''],
+  'Status': [''],
+  'Transaction': [''],
+  'Furnishing': [''],
+  'overlooking': [''],
+  'Bathroom': [0],
+  'Balcony': [0],
+  'Ownership': [''],
+  'Carpet Area (in sqft)': [0],
+  'Super Area (in sqft)': [0],
+  'Floor Level': [0],
+  'Total Floors': [0],
+  'Number of Parking': [0],
+  'Parking Status': ['']
+})
 
-# Display the dataset
-st.subheader('Preprocessed Dataset')
-st.write(data)
 
-# Sidebar for user input
-st.sidebar.header('User Input')
+input_data['location'] = st.selectbox('Location', sorted(df['location'].unique()))
+input_data['Transaction'] = st.selectbox('Transaction', sorted(df['Transaction'].unique()))
+input_data['Furnishing'] = st.selectbox('Furnishing', sorted(df['Furnishing'].unique()))
+input_data['overlooking'] = st.selectbox('Overlooking', sorted(df['overlooking'].unique()))
+input_data['Ownership'] = st.selectbox('Ownership', sorted(df['Ownership'].unique()))
+input_data['Bathroom'] = st.number_input('Number of Bathrooms', min_value=0)
+input_data['Balcony'] = st.number_input('Number of Balconies', min_value=0)
+input_data['Carpet Area (in sqft)'] = st.number_input('Carpet Area (in sqft)', min_value=0)
+input_data['Super Area (in sqft)'] = st.number_input('Super Area (in sqft)', min_value=0)
+input_data['Floor Level'] = st.number_input('Floor Level', min_value=0)
+input_data['Total Floors'] = st.number_input('Total Floors', min_value=0)
+input_data['Number of Parking'] = st.number_input('Number of Parking', min_value=0)
+input_data['Parking Status'] = st.radio('Parking Status', ['Covered', 'Open'])
 
-# Function to get user input
-def get_user_input():
-    user_input = {}
-    for col in data.columns:
-        user_input[col] = st.sidebar.number_input(f'Enter {col}', value=0)
-    return user_input
 
-# Get user input
-user_input = get_user_input()
+if st.button('Predict Price'):
+  prediction = predict_price(input_data)
+  st.write('Predicted Price:', prediction)
 
-# Function to predict house price
-def predict_price(user_input):
-    user_df = pd.DataFrame([user_input])
-    user_df = preprocess_data(user_df)
-    X = user_df.drop('Price (in rupees)', axis=1)
-    model = joblib.load('model.pkl')
-    prediction = model.predict(X)
-    return prediction[0]
-
-# Predict house price
-predicted_price = predict_price(user_input)
-
-# Display predicted price
-st.subheader('Predicted Price')
-st.write(f'The predicted price of the house is: {predicted_price}')
 
 
 hide_streamlit_style = """

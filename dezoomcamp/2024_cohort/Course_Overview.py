@@ -24,6 +24,7 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 # Streamlit form for user input
 st.title('House Price Prediction')
 
+
 # Transform function
 def transform_input(input_data, encoders):
     for col, encoder in encoders.items():
@@ -40,7 +41,6 @@ furnishing = st.selectbox('Furnishing', encoders['Furnishing'].classes_)
 ownership = st.selectbox('Ownership', encoders['Ownership'].classes_)
 parking_status = st.selectbox('Parking Status', encoders['Parking Status'].classes_)
 overlooking = st.selectbox('Overlooking', encoders['overlooking'].classes_)
-society = st.text_input('Society')  # Assuming Society is a free text field
 
 carpet_area = st.number_input('Carpet Area (in sqft)', min_value=0.0)
 super_area = st.number_input('Super Area (in sqft)', min_value=0.0)
@@ -58,7 +58,6 @@ if st.button('Predict'):
         'Ownership': ownership,
         'Parking Status': parking_status,
         'overlooking': overlooking,
-        'Society': society,
         'Carpet Area (in sqft)': carpet_area,
         'Super Area (in sqft)': super_area,
         'Floor Level': floor_level,
@@ -85,7 +84,6 @@ if st.button('Show Distribution of Prices'):
     # Example of a scatter plot
     fig = px.scatter(data, x='Carpet Area (in sqft)', y='Price (in rupees)', title='Carpet Area vs Price')
     st.plotly_chart(fig)
-
 
 
 

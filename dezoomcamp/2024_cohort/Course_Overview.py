@@ -6,10 +6,10 @@ import joblib
 import plotly.express as px
 
 # Load the model
-model = joblib.load('house/model.pkl')
+model = joblib.load('model.pkl')
 
 # Load the new dataset
-data = pd.read_csv('house/updated_house_info.csv')  
+data = pd.read_csv('updated_house_info.csv')  
 
 add_page_title(layout="wide")
 

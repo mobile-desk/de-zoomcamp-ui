@@ -8,7 +8,7 @@ show_pages(
         Page("dezoomcamp/DE_Zoomcamp.py", "Data  Visualization", "📊"),
 
         # 2024 Content
-        Section("DE Zoomcamp 2024", "🧙‍♂️"),
+        #Section("DE Zoomcamp 2024", "🧙‍♂️"),
         Page("dezoomcamp/2024_cohort/Course_Overview.py", "Course Overview", "📚", in_section=True),
         #Page("dezoomcamp/2024_cohort/Module_1_Introduction_&_Prerequisites.py", "Module 1 Introduction & Prerequisites", "1️⃣", in_section=True),
         #Page("dezoomcamp/2024_cohort/Module_2_Workflow_Orchestration.py", "Module 2 Workflow Orchestration", "2️⃣", in_section=True),

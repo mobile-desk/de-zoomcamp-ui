@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import plotly.express as px
+from sklearn.preprocessing import LabelEncoder
 
 # Load the model
 model = joblib.load('files/house/model.pkl')
@@ -24,81 +25,66 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 # Streamlit form for user input
 st.title('House Price Prediction')
 
-# Transform function
-def transform_input(input_data, encoders):
+
+# Function to convert object columns to integers
+def convert_object_to_int(df):
+    for col in df.select_dtypes(include='object').columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype('int32')
+    return df
+
+# Convert object columns
+data = convert_object_to_int(data)
+
+# Convert float columns to integers, excluding 'Price (in rupees)'
+float_cols = data.select_dtypes(include='float64').columns
+float_cols = float_cols[float_cols != 'Price (in rupees)']
+data[float_cols] = data[float_cols].fillna(0).astype('int32')
+
+# Function to preprocess data
+def preprocess_data(data):
+    # Encode categorical columns
     for col, encoder in encoders.items():
-        if col in input_data:
-            input_data[col] = encoder.transform([input_data[col]])[0]
-        else:
-            st.error(f"Key {col} not found in input data")
-    return input_data
+        data[col] = encoder.transform(data[col])
+    return data
 
+# Preprocess the data
+data = preprocess_data(data)
 
-# User input form
-location = st.selectbox('Location', encoders['location'].classes_)
-transaction = st.selectbox('Transaction', encoders['Transaction'].classes_)
-furnishing = st.selectbox('Furnishing', encoders['Furnishing'].classes_)
-ownership = st.selectbox('Ownership', encoders['Ownership'].classes_)
-parking_status = st.selectbox('Parking Status', encoders['Parking Status'].classes_)
-overlooking = st.selectbox('Overlooking', encoders['overlooking'].classes_)
-bathroom = st.number_input('Bathroom', min_value=0)
-balcony = st.number_input('Balcony', min_value=0)
+# Streamlit app
+st.title('House Price Prediction App')
 
-carpet_area = st.number_input('Carpet Area (in sqft)', min_value=0.0)
-super_area = st.number_input('Super Area (in sqft)', min_value=0.0)
-floor_level = st.number_input('Floor Level', min_value=0)
-total_floors = st.number_input('Total Floors', min_value=0)
-number_of_parking = st.number_input('Number of Parking', min_value=0)
+# Display the dataset
+st.subheader('Preprocessed Dataset')
+st.write(data)
 
+# Sidebar for user input
+st.sidebar.header('User Input')
 
+# Function to get user input
+def get_user_input():
+    user_input = {}
+    for col in data.columns:
+        user_input[col] = st.sidebar.number_input(f'Enter {col}', value=0)
+    return user_input
 
+# Get user input
+user_input = get_user_input()
 
+# Function to predict house price
+def predict_price(user_input):
+    user_df = pd.DataFrame([user_input])
+    user_df = preprocess_data(user_df)
+    X = user_df.drop('Price (in rupees)', axis=1)
+    model = joblib.load('model.pkl')
+    prediction = model.predict(X)
+    return prediction[0]
 
-# Handle submit button
-if st.button('Predict'):
-    # Collect user input into a dictionary
-    user_input = {
-        'location': location,
-        'Transaction': transaction,
-        'Furnishing': furnishing,
-        'Ownership': ownership,
-        'Parking Status': parking_status,
-        'overlooking': overlooking,
-        'Carpet Area (in sqft)': carpet_area,
-        'Super Area (in sqft)': super_area,
-        'Floor Level': floor_level,
-        'Total Floors': total_floors,
-        'Number of Parking': number_of_parking
-    }
-    
-    # Transform the input data using the saved encoders
-    transformed_input = transform_input(user_input, encoders)
-    
-    # Convert to DataFrame for consistency
-    input_df = pd.DataFrame([transformed_input])
-    
-    # Ensure all columns are in the correct order as expected by the model
-    columns = [
-        'location', 'Transaction', 'Furnishing', 'Ownership', 'Parking Status', 'overlooking',
-        'Carpet Area (in sqft)', 'Super Area (in sqft)', 'Floor Level', 'Total Floors', 'Number of Parking'
-    ]
-    input_df = input_df[columns]
-    
-    # Make prediction
-    prediction = model.predict(input_df)[0]
-    st.write(f'Predicted Price: {prediction} rupees')
+# Predict house price
+predicted_price = predict_price(user_input)
 
-# Example of a simple chart
-if st.button('Show Distribution of Prices'):
-    data = pd.read_csv('files/house/updated_house_info.csv')  # Adjust path as needed
-    fig = px.histogram(data, x='Price (in rupees)', nbins=50, title='Distribution of House Prices')
-    st.plotly_chart(fig)
-
-    # Example of a scatter plot
-    fig = px.scatter(data, x='Carpet Area (in sqft)', y='Price (in rupees)', title='Carpet Area vs Price')
-    st.plotly_chart(fig)
-
-
+# Display predicted price
+st.subheader('Predicted Price')
+st.write(f'The predicted price of the house is: {predicted_price}')
 
 
 hide_streamlit_style = """

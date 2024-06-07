@@ -5,7 +5,7 @@ add_page_title()
 
 show_pages(
     [   
-        Page("dezoomcamp/DE_Zoomcamp.py", "Data  Visualization", "📊"),
+        Page("dezoomcamp/DE_Zoomcamp.py", "HOME", "📊"),
 
         # 2024 Content
         #Section("DE Zoomcamp 2024", "🧙‍♂️"),

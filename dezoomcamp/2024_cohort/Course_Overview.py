@@ -13,6 +13,8 @@ encoders = joblib.load('files/house/encoders.pkl')
 
 # Load the new dataset
 data = pd.read_csv('files/house/updated_house_info.csv')  
+df = pd.read_csv('files/house/updated_house_info.csv')  
+
 
 add_page_title(layout="wide")
 

@@ -33,6 +33,7 @@ def transform_input(input_data, encoders):
             st.error(f"Key {col} not found in input data")
     return input_data
 
+
 # User input form
 location = st.selectbox('Location', encoders['location'].classes_)
 transaction = st.selectbox('Transaction', encoders['Transaction'].classes_)
@@ -40,12 +41,18 @@ furnishing = st.selectbox('Furnishing', encoders['Furnishing'].classes_)
 ownership = st.selectbox('Ownership', encoders['Ownership'].classes_)
 parking_status = st.selectbox('Parking Status', encoders['Parking Status'].classes_)
 overlooking = st.selectbox('Overlooking', encoders['overlooking'].classes_)
+bathroom = st.number_input('Bathroom', min_value=0)
+balcony = st.number_input('Balcony', min_value=0)
 
 carpet_area = st.number_input('Carpet Area (in sqft)', min_value=0.0)
 super_area = st.number_input('Super Area (in sqft)', min_value=0.0)
 floor_level = st.number_input('Floor Level', min_value=0)
 total_floors = st.number_input('Total Floors', min_value=0)
 number_of_parking = st.number_input('Number of Parking', min_value=0)
+
+
+
+
 
 # Handle submit button
 if st.button('Predict'):

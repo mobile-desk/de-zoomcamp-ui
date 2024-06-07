@@ -21,6 +21,9 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 
 #st.video("https://www.youtube.com/watch?v=AtRhA-NfS24")
 
+# Streamlit form for user input
+st.title('House Price Prediction')
+
 # Transform function
 def transform_input(input_data, encoders):
     for col, encoder in encoders.items():
@@ -36,6 +39,8 @@ transaction = st.selectbox('Transaction', encoders['Transaction'].classes_)
 furnishing = st.selectbox('Furnishing', encoders['Furnishing'].classes_)
 ownership = st.selectbox('Ownership', encoders['Ownership'].classes_)
 parking_status = st.selectbox('Parking Status', encoders['Parking Status'].classes_)
+overlooking = st.selectbox('Overlooking', encoders['overlooking'].classes_)
+society = st.text_input('Society')  # Assuming Society is a free text field
 
 carpet_area = st.number_input('Carpet Area (in sqft)', min_value=0.0)
 super_area = st.number_input('Super Area (in sqft)', min_value=0.0)
@@ -52,6 +57,8 @@ if st.button('Predict'):
         'Furnishing': furnishing,
         'Ownership': ownership,
         'Parking Status': parking_status,
+        'overlooking': overlooking,
+        'Society': society,
         'Carpet Area (in sqft)': carpet_area,
         'Super Area (in sqft)': super_area,
         'Floor Level': floor_level,

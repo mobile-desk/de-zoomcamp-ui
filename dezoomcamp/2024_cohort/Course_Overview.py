@@ -24,66 +24,61 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 
 #st.video("https://www.youtube.com/watch?v=AtRhA-NfS24")
 
-# Streamlit form for user input
-st.title('House Price Prediction')
 
-def preprocess_input(data):
-    # Your preprocessing steps here
-    data['Parking Status'] = data['Parking Status'].str.replace('Covered,', 'Covered')
+###########################
+
+
+
+# Form for user input
+st.header("Enter the Housing Features")
+
+# Define input fields
+location = st.selectbox("Location", sorted(data['location'].unique()))
+transaction = st.selectbox("Transaction", sorted(data['Transaction'].unique()))
+furnishing = st.selectbox("Furnishing", sorted(data['Furnishing'].unique()))
+overlooking = st.selectbox("Overlooking", sorted(data['overlooking'].unique()))
+ownership = st.selectbox("Ownership", sorted(data['Ownership'].unique()))
+bathroom = st.number_input("Bathroom", min_value=1, step=1)
+balcony = st.number_input("Balcony", min_value=0, step=1)
+carpet_area = st.number_input("Carpet Area (in sqft)", min_value=0.0, step=0.1)
+super_area = st.number_input("Super Area (in sqft)", min_value=0.0, step=0.1)
+floor_level = st.number_input("Floor Level", min_value=0, step=1)
+total_floors = st.number_input("Total Floors", min_value=0, step=1)
+number_of_parking = st.number_input("Number of Parking", min_value=0, step=1)
+parking_status = st.selectbox("Parking Status", sorted(data['Parking Status'].unique()))
+
+# Prediction button
+if st.button("Predict"):
+    # Encode the input data
+    input_data = pd.DataFrame({
+        'location': [location],
+        'Transaction': [transaction],
+        'Furnishing': [furnishing],
+        'overlooking': [overlooking],
+        'Ownership': [ownership],
+        'Bathroom': [bathroom],
+        'Balcony': [balcony],
+        'Carpet Area (in sqft)': [carpet_area],
+        'Super Area (in sqft)': [super_area],
+        'Floor Level': [floor_level],
+        'Total Floors': [total_floors],
+        'Number of Parking': [number_of_parking],
+        'Parking Status': [parking_status]
+    })
+
     for col, encoder in encoders.items():
-        data[col] = encoder.transform(data[col])
-    data.drop(columns=['Status'], inplace=True)
-    data.reset_index(drop=True, inplace=True)
-    return data
+        input_data[col] = encoder.transform(input_data[col])
 
-def predict_price(input_data):
-    processed_data = preprocess_input(input_data)
-    prediction = model.predict(processed_data)
-    return prediction
-  
-  
-  
-st.write('This app predicts the price of a house based on input features.')
+    # Make prediction
+    prediction = model.predict(input_data)[0]
 
-st.header('Input Features')
-  
-input_data = pd.DataFrame({
-  'Price (in rupees)': [0],
-  'location': [''],
-  'Status': [''],
-  'Transaction': [''],
-  'Furnishing': [''],
-  'overlooking': [''],
-  'Bathroom': [0],
-  'Balcony': [0],
-  'Ownership': [''],
-  'Carpet Area (in sqft)': [0],
-  'Super Area (in sqft)': [0],
-  'Floor Level': [0],
-  'Total Floors': [0],
-  'Number of Parking': [0],
-  'Parking Status': ['']
-})
+    # Display prediction
+    st.success(f"The predicted price is: {prediction:.2f} rupees")
 
 
-input_data['location'] = st.selectbox('Location', sorted(df['location'].unique()))
-input_data['Transaction'] = st.selectbox('Transaction', sorted(df['Transaction'].unique()))
-input_data['Furnishing'] = st.selectbox('Furnishing', sorted(df['Furnishing'].unique()))
-input_data['overlooking'] = st.selectbox('Overlooking', sorted(df['overlooking'].unique()))
-input_data['Ownership'] = st.selectbox('Ownership', sorted(df['Ownership'].unique()))
-input_data['Bathroom'] = st.number_input('Number of Bathrooms', min_value=0)
-input_data['Balcony'] = st.number_input('Number of Balconies', min_value=0)
-input_data['Carpet Area (in sqft)'] = st.number_input('Carpet Area (in sqft)', min_value=0)
-input_data['Super Area (in sqft)'] = st.number_input('Super Area (in sqft)', min_value=0)
-input_data['Floor Level'] = st.number_input('Floor Level', min_value=0)
-input_data['Total Floors'] = st.number_input('Total Floors', min_value=0)
-input_data['Number of Parking'] = st.number_input('Number of Parking', min_value=0)
-input_data['Parking Status'] = st.radio('Parking Status', ['Covered', 'Open'])
 
 
-if st.button('Predict Price'):
-  prediction = predict_price(input_data)
-  st.write('Predicted Price:', prediction)
+############################
 
 
 

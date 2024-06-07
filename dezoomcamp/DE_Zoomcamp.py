@@ -7,8 +7,8 @@ show_pages(
     [   
         Page("dezoomcamp/DE_Zoomcamp.py", "Data  Visualization", "📊"),
 
-        # # 2024 Content
-        #Section("DE Zoomcamp 2024", "🧙‍♂️"),
+        # 2024 Content
+        Section("DE Zoomcamp 2024", "🧙‍♂️"),
         #Page("dezoomcamp/2024_cohort/Course_Overview.py", "Course Overview", "📚", in_section=True),
         #Page("dezoomcamp/2024_cohort/Module_1_Introduction_&_Prerequisites.py", "Module 1 Introduction & Prerequisites", "1️⃣", in_section=True),
         #Page("dezoomcamp/2024_cohort/Module_2_Workflow_Orchestration.py", "Module 2 Workflow Orchestration", "2️⃣", in_section=True),
@@ -56,7 +56,7 @@ with st.expander("Sign up here for Data Decoded"):
     
     <a href="https://www.udemy.com/course/data-decoded/?referralCode=B51A455EEDEF74E4DB12"><img src="https://user-images.githubusercontent.com/875246/185755203-17945fd1-6b64-46f2-8377-1011dcb1a444.png" height="50" /></a>
 
-    #
+    
 
     - Register and get amazing discounts
     - The videos are published on [Chibudom Obasi's YouTube channel](https://www.youtube.com/c/Chibudomobasi?app=desktop&sub_confirmation=1) 

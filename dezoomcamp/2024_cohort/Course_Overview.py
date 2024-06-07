@@ -7,6 +7,8 @@ import plotly.express as px
 
 # Load the model
 model = joblib.load('files/house/model.pkl')
+encoders = joblib.load('files/house/encoders.pkl')
+
 
 # Load the new dataset
 data = pd.read_csv('files/house/updated_house_info.csv')  
@@ -20,76 +22,63 @@ st.markdown("### 🏠 HOUSING PRICE PREDICTION AND VISUALIZATION APP")
 #st.video("https://www.youtube.com/watch?v=AtRhA-NfS24")
 
 
-# Form for user input
-st.header("Enter the Housing Features")
+# Transform function
+def transform_input(input_data, encoders):
+    for col, encoder in encoders.items():
+        input_data[col] = encoder.transform([input_data[col]])[0]
+    return input_data
+  
+  
+# User input form
+location = st.selectbox('Location', encoders['location'].classes_)
+transaction = st.selectbox('Transaction', encoders['Transaction'].classes_)
+furnishing = st.selectbox('Furnishing', encoders['Furnishing'].classes_)
+ownership = st.selectbox('Ownership', encoders['Ownership'].classes_)
+parking_status = st.selectbox('Parking Status', encoders['Parking Status'].classes_)
 
-# Define input fields
-location = st.selectbox("Location", sorted(data['location'].unique()))
-transaction = st.selectbox("Transaction", sorted(data['Transaction'].unique()))
-furnishing = st.selectbox("Furnishing", sorted(data['Furnishing'].unique()))
-overlooking = st.selectbox("Overlooking", sorted(data['overlooking'].unique()))
-society = st.selectbox("Society", sorted(data['Society'].unique()))
-bathroom = st.number_input("Bathroom", min_value=1, step=1)
-balcony = st.number_input("Balcony", min_value=0, step=1)
-ownership = st.selectbox("Ownership", sorted(data['Ownership'].unique()))
-carpet_area = st.number_input("Carpet Area (in sqft)", min_value=0.0, step=0.1)
-super_area = st.number_input("Super Area (in sqft)", min_value=0.0, step=0.1)
-floor_level = st.number_input("Floor Level", min_value=0, step=1)
-total_floors = st.number_input("Total Floors", min_value=0, step=1)
-number_of_parking = st.number_input("Number of Parking", min_value=0, step=1)
-parking_status = st.selectbox("Parking Status", sorted(data['Parking Status'].unique()))
+carpet_area = st.number_input('Carpet Area (in sqft)', min_value=0.0)
+super_area = st.number_input('Super Area (in sqft)', min_value=0.0)
+floor_level = st.number_input('Floor Level', min_value=0)
+total_floors = st.number_input('Total Floors', min_value=0)
+number_of_parking = st.number_input('Number of Parking', min_value=0)
 
-# Prediction button
-if st.button("Predict"):
-    # Create a dataframe for the input
-    input_data = pd.DataFrame({
-        'location': [location],
-        'Transaction': [transaction],
-        'Furnishing': [furnishing],
-        'overlooking': [overlooking],
-        'Society': [society],
-        'Bathroom': [bathroom],
-        'Balcony': [balcony],
-        'Ownership': [ownership],
-        'Carpet Area (in sqft)': [carpet_area],
-        'Super Area (in sqft)': [super_area],
-        'Floor Level': [floor_level],
-        'Total Floors': [total_floors],
-        'Number of Parking': [number_of_parking],
-        'Parking Status': [parking_status]
-    })
+
+# Handle submit button
+if st.button('Predict'):
+    # Collect user input into a dictionary
+    user_input = {
+        'location': location,
+        'Transaction': transaction,
+        'Furnishing': furnishing,
+        'Ownership': ownership,
+        'Parking Status': parking_status,
+        'Carpet Area (in sqft)': carpet_area,
+        'Super Area (in sqft)': super_area,
+        'Floor Level': floor_level,
+        'Total Floors': total_floors,
+        'Number of Parking': number_of_parking
+    }
+    
+    # Transform the input data using the saved encoders
+    transformed_input = transform_input(user_input, encoders)
+    
+    # Convert to numpy array and reshape
+    input_data = np.array(list(transformed_input.values())).reshape(1, -1)
     
     # Make prediction
     prediction = model.predict(input_data)[0]
+    st.write(f'Predicted Price: {prediction} rupees')
     
-    # Display prediction
-    st.success(f"The predicted price is: {prediction:.2f} rupees")
     
+# Example of a simple chart
+if st.button('Show Distribution of Prices'):
+    data = pd.read_csv('files/house/updated_house_info.csv')  # Adjust path as needed
+    fig = px.histogram(data, x='Price (in rupees)', nbins=50, title='Distribution of House Prices')
+    st.plotly_chart(fig)
 
-
-
-
-# Display charts and graphs
-st.header("Data Visualizations")
-
-# Histogram of prices
-fig_hist = px.histogram(data, x='Price (in rupees)', nbins=50, title='Price Distribution', color_discrete_sequence=['purple'])
-fig_hist.update_xaxes(title='Price (in rupees)')
-fig_hist.update_yaxes(title='Frequency')
-st.plotly_chart(fig_hist)
-
-# Boxplot of prices
-fig_box = px.box(data, y='Price (in rupees)', title='Price Boxplot', color_discrete_sequence=['green'])
-fig_box.update_yaxes(title='Price (in rupees)')
-st.plotly_chart(fig_box)
-
-# Correlation heatmap
-correlation_matrix = data.corr(numeric_only=True)
-fig_heatmap = px.imshow(correlation_matrix, text_auto=True, aspect="auto", title='Correlation Heatmap', color_continuous_scale='Greens')
-st.plotly_chart(fig_heatmap)
-
-
-
+    # Example of a scatter plot
+    fig = px.scatter(data, x='Carpet Area (in sqft)', y='Price (in rupees)', title='Carpet Area vs Price')
+    st.plotly_chart(fig)
 
 
 
